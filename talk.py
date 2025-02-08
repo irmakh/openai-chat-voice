@@ -28,6 +28,8 @@ sound_directory = config.get('DEFAULT', 'sound_directory', fallback="sound-strea
 keepGeneratedFile = config.getboolean('DEFAULT', 'keepGeneratedFile', fallback=True)
 generateTranscript = config.getboolean('DEFAULT', 'generateTranscript', fallback=True)
 content = config.get('DEFAULT', 'content', fallback="You are a historian answering questions. You will state users question first than answer.")
+readAftergenerate = config.getboolean('DEFAULT', 'readAfterGenerate', fallback=True)
+
 
 # Client to interact with the OpenAI API
 client = OpenAI(base_url=base_url,api_key=OPENAI_API_KEY)
@@ -92,11 +94,12 @@ def play_audio(file_path: str) -> None:
     Returns:
         None
     """
-    pygame.mixer.init()
-    pygame.mixer.music.load(file_path)
-    pygame.mixer.music.play()
-    while pygame.mixer.music.get_busy():
-        pygame.time.Clock().tick(10)
+    if readAftergenerate:
+        pygame.mixer.init()
+        pygame.mixer.music.load(file_path)
+        pygame.mixer.music.play()
+        while pygame.mixer.music.get_busy():
+            pygame.time.Clock().tick(10)
 
 
 def print_text(answer: str) -> None:
