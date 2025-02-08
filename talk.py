@@ -40,7 +40,7 @@ generateTranscript = True
 # Client to interact with the OpenAI API
 client = OpenAI(base_url=base_url,api_key=OPENAI_API_KEY)
 
-
+# Define colors for console output
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -236,7 +236,7 @@ def main() -> None:
 
     This function initializes garbage collection, continuously gets user input,
     generates a response using the chat model, and then converts the response
-    to speech using the TTS model. The loop continues until the user inputs 'exit'.
+    to speech using the TTS model. The loop continues until the user inputs 'bye'.
 
     Args:
         None
