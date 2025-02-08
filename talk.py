@@ -128,7 +128,12 @@ def play_audio(file_path: str) -> None:
     pygame.mixer.music.load(file_path)
     pygame.mixer.music.play()
     while pygame.mixer.music.get_busy():
-        pygame.time.Clock().tick(10)
+        print(f"{bcolors.OKBLUE}Press Ctrl+C to stop playing{bcolors.ENDC}")
+        try:
+            while pygame.mixer.music.get_busy():
+                pygame.time.Clock().tick(10)
+        except KeyboardInterrupt:
+            pygame.mixer.music.stop()
 
 
 def print_text(answer: str) -> None:
@@ -196,7 +201,7 @@ def save_transcript(user_prompt: str, answer: str, fileDate: str) -> None:
     if generateTranscript:
         with open(f"{sound_directory}{fileDate}-transcript.txt", 'w') as f:
             f.write(f"Original Prompt: {user_prompt}\n\n")
-            f.write(answer)
+            f.write(str(answer.encode('utf-8')))
 
 
 
