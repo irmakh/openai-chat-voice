@@ -18,7 +18,7 @@ To install the project, follow these steps:
 
 The program will continuously prompt the user for input and generate responses using the chat model. The responses will be converted to speech using the TTS model and played back to the user.
 
-The program will exit when the user inputs 'exit'.
+The program will exit when the user inputs 'bye'.
 
 This project is licensed under the MIT License. See the LICENSE file for details.
 ## Installation
