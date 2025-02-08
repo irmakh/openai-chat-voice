@@ -127,13 +127,12 @@ def play_audio(file_path: str) -> None:
     pygame.mixer.init()
     pygame.mixer.music.load(file_path)
     pygame.mixer.music.play()
-    while pygame.mixer.music.get_busy():
-        print(f"{bcolors.OKBLUE}Press Ctrl+C to stop playing{bcolors.ENDC}")
-        try:
-            while pygame.mixer.music.get_busy():
-                pygame.time.Clock().tick(10)
-        except KeyboardInterrupt:
-            pygame.mixer.music.stop()
+    print(f"{bcolors.OKBLUE}Press Ctrl+C to stop playing{bcolors.ENDC}")
+    try:
+        while pygame.mixer.music.get_busy():
+            pygame.time.Clock().tick(10)
+    except KeyboardInterrupt:
+        pygame.mixer.music.stop()
 
 
 def print_text(answer: str) -> None:
