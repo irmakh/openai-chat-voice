@@ -8,6 +8,7 @@ import datetime
 import gc
 import os
 import configparser
+import re
 
 def get_config()->None: 
     """
@@ -67,6 +68,10 @@ def get_config()->None:
     memoryMessageCount = config.getint('DEFAULT', 'memoryMessageCount', fallback=10)
     global botName
     botName = config.get('DEFAULT', 'botName', fallback="Bot")
+    global removeDeepseekThinkTags
+    removeDeepseekThinkTags = config.getboolean('DEFAULT', 'removeDeepseekThinkTags', fallback=True)
+    global speakWelcome
+    speakWelcome = config.getboolean('DEFAULT', 'speakWelcome', fallback=True)
 
 # Define colors for console output
 global bcolors
@@ -216,6 +221,7 @@ def generate(user_prompt: str, content: str) -> str:
         str: The generated response
     """
     
+
     run_garbage_collection()
     completion = client.chat.completions.create(
         model=chat_model_name,
@@ -250,7 +256,8 @@ def exit_program() -> None:
         None
     """
     run_garbage_collection()
-    play_audio("bye.wav")
+    if speakWelcome:
+        play_audio("bye.wav")
     file_path = os.path.join(sound_directory, "stream.wav")
     if os.path.exists(file_path):
         os.remove(file_path)
@@ -296,10 +303,12 @@ def main() -> None:
     Returns:
         None
     """
-    play_audio("hi.wav")
+    
     global user_prompt
     # Initialize configuration settings and run garbage collection
     get_config()
+    if speakWelcome:
+        play_audio("hi.wav")
     run_garbage_collection()
     # Client to interact with the OpenAI API
     global client
@@ -316,10 +325,15 @@ def main() -> None:
         
         chatHistory = '\n'.join(chatHistoryArray[-memory:])
         chatHistory = chatHistory.replace("{botName}", botName)
-
+        
         answer: str = generate(user_prompt,chatHistory)
+        historyAnswer = answer
+        if removeDeepseekThinkTags:
+            # Remove text inside <think></think> tags from content
+            answer = re.sub(r"<think>.*?</think>", "", answer, flags=re.DOTALL)
+
         chatHistoryArray.append("User: "+user_prompt)
-        chatHistoryArray.append(f"{botName}: "+answer)
+        chatHistoryArray.append(f"{botName}: "+historyAnswer)
         if len(chatHistoryArray) > memory:
             del chatHistoryArray[:-memory]
         chatHistoryArray = [initialContent]+chatHistoryArray
