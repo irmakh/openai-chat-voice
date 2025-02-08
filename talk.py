@@ -65,7 +65,9 @@ def get_config()->None:
     printGeneratedText = config.getboolean('DEFAULT', 'printGeneratedText', fallback=True)
     global memoryMessageCount
     memoryMessageCount = config.getint('DEFAULT', 'memoryMessageCount', fallback=10)
-  
+    global botName
+    botName = config.get('DEFAULT', 'botName', fallback="Bot")
+
 # Define colors for console output
 global bcolors
 class bcolors:
@@ -290,6 +292,7 @@ def main() -> None:
     Returns:
         None
     """
+    play_audio("hi.wav")
     global user_prompt
     # Initialize configuration settings and run garbage collection
     get_config()
@@ -305,11 +308,14 @@ def main() -> None:
 
         if user_prompt.lower() == "bye":
             break
-        chatHistory = '\n'.join(chatHistoryArray[-memory:])
         
+        
+        chatHistory = '\n'.join(chatHistoryArray[-memory:])
+        chatHistory = chatHistory.replace("{botName}", botName)
+
         answer: str = generate(user_prompt,chatHistory)
-        chatHistoryArray.append(user_prompt)
-        chatHistoryArray.append(answer)
+        chatHistoryArray.append("User: "+user_prompt)
+        chatHistoryArray.append(f"{botName}: "+answer)
         if len(chatHistoryArray) > memory:
             del chatHistoryArray[:-memory]
         chatHistoryArray = [initialContent]+chatHistoryArray
