@@ -203,6 +203,9 @@ def exit_program() -> None:
     run_garbage_collection()
     print("Exiting program...")
     play_audio("bye.wav")
+    file_path = os.path.join(sound_directory, "stream.wav")
+    if os.path.exists(file_path):
+        os.remove(file_path)
     exit(0)
 
 
