@@ -9,32 +9,63 @@ import gc
 import os
 import configparser
 
-# Create a ConfigParser object
-config = configparser.ConfigParser()
+def get_config()->None: 
+    """
+    Load configuration settings from a file and set global variables.
 
-# Read the configuration file
-config.read('config.ini')
+    This function reads a configuration file named 'config.ini' using ConfigParser
+    and sets several global variables based on the 'DEFAULT' section of the file.
+    It provides fallback values for each configuration variable if they are not
+    present in the file. The configuration includes settings for the chat model
+    name, API key, base URL, sound directory, and various flags controlling 
+    file generation and output behavior.
 
-# Access configuration variables
-chat_model_name = config.get('DEFAULT', 'chat_model_name', fallback="llama-3.1-8b-lexi-uncensored-v2")
-base_url = config.get('DEFAULT', 'base_url', fallback="http://localhost:1234/v1/")
-OPENAI_API_KEY = config.get('DEFAULT', 'OPENAI_API_KEY', fallback=os.environ.get("OPENAI_API_KEY"))
+    Globals:
+        chat_model_name (str): Name of the chat model to use.
+        base_url (str): Base URL for the API.
+        OPENAI_API_KEY (str): API key for authentication.
+        sound_directory (str): Directory for storing sound files.
+        keepGeneratedFile (bool): Flag to determine if generated files should be kept.
+        generateTranscript (bool): Flag to determine if transcripts should be generated.
+        content (str): Content description for the assistant's behavior.
+        readAftergenerate (bool): Flag to play audio after generation.
+        printGeneratedText (bool): Flag to print generated text.
+    Raises:
+    """
 
-if OPENAI_API_KEY is None:
-    print("OPENAI_API_KEY not set in config or as environment variable, using default")
-    OPENAI_API_KEY = 'your-api-key'
+    # Create a ConfigParser object
+    config = configparser.ConfigParser()
 
-sound_directory = config.get('DEFAULT', 'sound_directory', fallback="sound-streams/")
-keepGeneratedFile = config.getboolean('DEFAULT', 'keepGeneratedFile', fallback=True)
-generateTranscript = config.getboolean('DEFAULT', 'generateTranscript', fallback=True)
-content = config.get('DEFAULT', 'content', fallback="You are a historian answering questions. You will state users question first than answer.")
-readAftergenerate = config.getboolean('DEFAULT', 'readAfterGenerate', fallback=True)
+    # Read the configuration file
+    config.read('config.ini')
 
+    # Access configuration variables
+    global chat_model_name
+    chat_model_name = config.get('DEFAULT', 'chat_model_name', fallback="llama-3.1-8b-lexi-uncensored-v2")
+    global base_url
+    base_url = config.get('DEFAULT', 'base_url', fallback="http://localhost:1234/v1/")
+    global OPENAI_API_KEY
+    OPENAI_API_KEY = config.get('DEFAULT', 'OPENAI_API_KEY', fallback=os.environ.get("OPENAI_API_KEY"))
 
-# Client to interact with the OpenAI API
-client = OpenAI(base_url=base_url,api_key=OPENAI_API_KEY)
+    if OPENAI_API_KEY is None:
+        print("OPENAI_API_KEY not set in config or as environment variable, using default")
+        OPENAI_API_KEY = 'your-api-key'
+
+    global sound_directory
+    sound_directory = config.get('DEFAULT', 'sound_directory', fallback="sound-streams/")
+    global keepGeneratedFile
+    keepGeneratedFile = config.getboolean('DEFAULT', 'keepGeneratedFile', fallback=True)
+    global generateTranscript
+    generateTranscript = config.getboolean('DEFAULT', 'generateTranscript', fallback=True)
+    global content
+    content = config.get('DEFAULT', 'content', fallback="You are a historian answering questions. You will state users question first than answer.")
+    global readAftergenerate
+    readAftergenerate = config.getboolean('DEFAULT', 'readAfterGenerate', fallback=True)
+    global printGeneratedText
+    printGeneratedText = config.getboolean('DEFAULT', 'printGeneratedText', fallback=True)
 
 # Define colors for console output
+global bcolors
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -45,8 +76,6 @@ class bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
-
-
 
 def run_garbage_collection() -> None:
     """
@@ -62,9 +91,6 @@ def run_garbage_collection() -> None:
     gc.collect()
     #print(f"{bcolors.OKGREEN}{datetime.datetime.now().strftime('%H:%M:%S')} - garbage collected{bcolors.ENDC}")
     print_used_gpu_memory()
-
-
-
 
 def print_used_gpu_memory() -> None:
     """
@@ -112,21 +138,18 @@ def print_text(answer: str) -> None:
     Returns:
         None
     """
-    print("\n\n")
-    print(f"{bcolors.HEADER}{bcolors.BOLD}==============================================")
-    print(f"                  TEXT TO SPEECH                ")
-    print(f"=============================================={bcolors.ENDC}")
-    print("\n")
-    print(answer)
-    print("\n")
-    print(f"{bcolors.HEADER}==============================================")
-    print("                  END OF SPEECH               ")
-    print("==============================================")
-    print("               Thank you for using             ")
-    print("                Our Application!               ")
-    print(f"=============================================={bcolors.ENDC}")
-    print("\n")
-
+    if printGeneratedText:
+        print("\n\n")
+        print(f"{bcolors.HEADER}{bcolors.BOLD}==============================================")
+        print(f"                  TEXT TO SPEECH                ")
+        print(f"=============================================={bcolors.ENDC}")
+        print("\n")
+        print(answer)
+        print("\n")
+        print(f"{bcolors.HEADER}==============================================")
+        print("                  END OF SPEECH               ")
+        print(f"=============================================={bcolors.ENDC}")
+       
 def run_tts(answer: str) -> None:
     """
     Run the TTS model, generate speech based on the user's prompt, and play the generated audio.
@@ -201,11 +224,16 @@ def exit_program() -> None:
         None
     """
     run_garbage_collection()
-    print("Exiting program...")
     play_audio("bye.wav")
     file_path = os.path.join(sound_directory, "stream.wav")
     if os.path.exists(file_path):
         os.remove(file_path)
+    print(f"{bcolors.HEADER}==============================================")
+    print("               Thank you for using             ")
+    print("                Our Application!               ")
+    print("                Exiting program...               ")
+    print(f"=============================================={bcolors.ENDC}")
+    print("\n")
     exit(0)
 
 
@@ -242,7 +270,14 @@ def main() -> None:
     Returns:
         None
     """
+    # Initialize configuration settings and run garbage collection
+    get_config()
     run_garbage_collection()
+    # Client to interact with the OpenAI API
+    global client
+    client = OpenAI(base_url=base_url,api_key=OPENAI_API_KEY)
+    
+    # Main program loop
     while True:
         user_prompt: str = get_user_input()
 
@@ -253,11 +288,11 @@ def main() -> None:
         run_tts(answer)
 
         run_garbage_collection()
-
-
+    # Exit the program
+    exit_program()
 
 
 main()
-exit_program()
+
 
 
