@@ -57,13 +57,15 @@ def get_config()->None:
     keepGeneratedFile = config.getboolean('DEFAULT', 'keepGeneratedFile', fallback=True)
     global generateTranscript
     generateTranscript = config.getboolean('DEFAULT', 'generateTranscript', fallback=True)
-    global content
-    content = config.get('DEFAULT', 'content', fallback="You are a historian answering questions. You will state users question first than answer.")
+    global initialContent
+    initialContent = config.get('DEFAULT', 'initialContent', fallback="You are a historian answering questions. You will state users question first than answer.")
     global readAftergenerate
     readAftergenerate = config.getboolean('DEFAULT', 'readAfterGenerate', fallback=True)
     global printGeneratedText
     printGeneratedText = config.getboolean('DEFAULT', 'printGeneratedText', fallback=True)
-
+    global memoryMessageCount
+    memoryMessageCount = config.getint('DEFAULT', 'memoryMessageCount', fallback=10)
+  
 # Define colors for console output
 global bcolors
 class bcolors:
@@ -120,12 +122,11 @@ def play_audio(file_path: str) -> None:
     Returns:
         None
     """
-    if readAftergenerate:
-        pygame.mixer.init()
-        pygame.mixer.music.load(file_path)
-        pygame.mixer.music.play()
-        while pygame.mixer.music.get_busy():
-            pygame.time.Clock().tick(10)
+    pygame.mixer.init()
+    pygame.mixer.music.load(file_path)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy():
+        pygame.time.Clock().tick(10)
 
 
 def print_text(answer: str) -> None:
@@ -169,13 +170,14 @@ def run_tts(answer: str) -> None:
    
     if(keepGeneratedFile):
         fullFile = f"{sound_directory}{fileDate}-sound.wav" 
-        
+
     save_transcript(user_prompt, answer, fileDate)
 
     tts.tts_to_file(text=answer, file_path=fullFile)
     del tts
     run_garbage_collection()
-    play_audio(fullFile)
+    if readAftergenerate:
+        play_audio(fullFile)
 
 def save_transcript(user_prompt: str, answer: str, fileDate: str) -> None:
     """
@@ -197,7 +199,7 @@ def save_transcript(user_prompt: str, answer: str, fileDate: str) -> None:
 
 
 
-def generate(user_prompt: str) -> str:
+def generate(user_prompt: str, content: str) -> str:
     """
     Run the chat model based on the user's prompt and generate a response.
 
@@ -207,12 +209,13 @@ def generate(user_prompt: str) -> str:
     Returns:
         str: The generated response
     """
+    
     run_garbage_collection()
     completion = client.chat.completions.create(
         model=chat_model_name,
         messages=[
             {
-                "role": "assistant", 
+                "role": "system", 
                 "content": content
             },
             {
@@ -224,8 +227,6 @@ def generate(user_prompt: str) -> str:
     )
 
     answer = completion.choices[0].message.content
-    
-    
     run_garbage_collection()
 
     return answer
@@ -296,23 +297,29 @@ def main() -> None:
     # Client to interact with the OpenAI API
     global client
     client = OpenAI(base_url=base_url,api_key=OPENAI_API_KEY)
-    
+    chatHistoryArray = [initialContent]
+    memory = memoryMessageCount*2
     # Main program loop
     while True:
         user_prompt= get_user_input()
 
         if user_prompt.lower() == "bye":
             break
-
-        answer: str = generate(user_prompt)
+        chatHistory = '\n'.join(chatHistoryArray[-memory:])
+        
+        answer: str = generate(user_prompt,chatHistory)
+        chatHistoryArray.append(user_prompt)
+        chatHistoryArray.append(answer)
+        if len(chatHistoryArray) > memory:
+            del chatHistoryArray[:-memory]
+        chatHistoryArray = [initialContent]+chatHistoryArray
         run_tts(answer)
-
         run_garbage_collection()
     # Exit the program
     exit_program()
 
-
 main()
+
 
 
 
