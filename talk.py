@@ -7,35 +7,27 @@ import pygame
 import datetime
 import gc
 import os
+import configparser
 
-# Name of the chat model to use
-chat_model_name="llama-3.1-8b-lexi-uncensored-v2"
+# Create a ConfigParser object
+config = configparser.ConfigParser()
 
-# URL of the OpenAI API
-base_url = "http://localhost:1234/v1/"
+# Read the configuration file
+config.read('config.ini')
 
-# API key for the OpenAI API
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+# Access configuration variables
+chat_model_name = config.get('DEFAULT', 'chat_model_name', fallback="llama-3.1-8b-lexi-uncensored-v2")
+base_url = config.get('DEFAULT', 'base_url', fallback="http://localhost:1234/v1/")
+OPENAI_API_KEY = config.get('DEFAULT', 'OPENAI_API_KEY', fallback=os.environ.get("OPENAI_API_KEY"))
+
 if OPENAI_API_KEY is None:
-    print("OPENAI_API_KEY not set as environment variable, using default")
+    print("OPENAI_API_KEY not set in config or as environment variable, using default")
     OPENAI_API_KEY = 'your-api-key'
 
-
-# Content to send to the chat model
-# This is the prompt that the chat model will respond to
-content = "You are a historian answering questions. You will state users question first than answer."
-
-# Directory to store audio files
-sound_directory = "sound-streams/"
-
-# Keep the generated audio files after they have been played
-# The file will be named <date>-sound.wav
-keepGeneratedFile = True
-
-# Generate a transcript of the chat session
-# This will save the transcript to a text file
-# The file will be named <date>-transcript.txt
-generateTranscript = True
+sound_directory = config.get('DEFAULT', 'sound_directory', fallback="sound-streams/")
+keepGeneratedFile = config.getboolean('DEFAULT', 'keepGeneratedFile', fallback=True)
+generateTranscript = config.getboolean('DEFAULT', 'generateTranscript', fallback=True)
+content = config.get('DEFAULT', 'content', fallback="You are a historian answering questions. You will state users question first than answer.")
 
 # Client to interact with the OpenAI API
 client = OpenAI(base_url=base_url,api_key=OPENAI_API_KEY)
