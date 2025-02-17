@@ -14,6 +14,6 @@ def save_transcript(user_prompt: str, answer: str, fileDate: str, config) -> Non
     """
     
     if config["generateTranscript"]:
-        with open(f"{config['sound_directory']}{fileDate}-transcript.txt", 'w') as f:
+        with open(f"{config['transcript_directory']}{fileDate}-transcript.txt", 'w') as f:
             f.write(f"Original Prompt: {user_prompt}\n\n")
-            f.write(str(answer.encode('utf-8')))
+            f.write(str(answer))

@@ -23,6 +23,7 @@ def load_config() -> dict:
         "base_url": config.get('DEFAULT', 'base_url', fallback="http://localhost:1234/v1/"),
         "OPENAI_API_KEY": config.get('DEFAULT', 'OPENAI_API_KEY', fallback=os.environ.get("OPENAI_API_KEY") or 'your-api-key'),
         "sound_directory": config.get('DEFAULT', 'sound_directory', fallback="sound-streams/"),
+        "transcript_directory": config.get('DEFAULT', 'transcript_directory', fallback="transcript-streams/"),
         "keepGeneratedFile": config.getboolean('DEFAULT', 'keepGeneratedFile', fallback=True),
         "generateTranscript": config.getboolean('DEFAULT', 'generateTranscript', fallback=True),
         "initialContent": config.get('DEFAULT', 'initialContent', fallback="You are a historian answering questions. You will state users question first than answer."),

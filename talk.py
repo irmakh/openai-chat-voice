@@ -38,6 +38,8 @@ def main() -> None:
         user_prompt= get_user_input()
 
         if user_prompt.lower() == "bye":
+            if config["speakWelcome"]:
+                play_audio("bye.wav")
             break
         
         chatHistory = '\n'.join(chatHistoryArray[-memory:])
