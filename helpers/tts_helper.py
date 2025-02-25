@@ -15,8 +15,10 @@ def run_tts(answer: str,fileDate: str, config) -> None:
 
     #tts = TTS(model_name="tts_models/tr/common-voice/glow-tts", progress_bar=False).to(device)
     tts = TTS(model_name="tts_models/en/jenny/jenny", progress_bar=False).to(device)
-    # Print the generated text
-    print_text(answer,config)
+
+    if config["printGeneratedText"]:
+        # Print the generated text
+        print_text(answer,config)
     
     fullFile = config["sound_directory"] + "stream.wav"
    
