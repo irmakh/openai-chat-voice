@@ -1,10 +1,7 @@
 import torch
 from TTS.api import TTS
 import pygame
-import gc
-from helpers.memory_helper import run_garbage_collection, print_used_gpu_memory
 from helpers.console_helper import print_text
-from helpers.transcript_helper import save_transcript
 from bgcolors import bcolors
 
 def run_tts(answer: str,fileDate: str, config) -> None:
@@ -18,9 +15,8 @@ def run_tts(answer: str,fileDate: str, config) -> None:
 
     #tts = TTS(model_name="tts_models/tr/common-voice/glow-tts", progress_bar=False).to(device)
     tts = TTS(model_name="tts_models/en/jenny/jenny", progress_bar=False).to(device)
-    run_garbage_collection()
     # Print the generated text
-    print_text(answer)
+    print_text(answer,config)
     
     fullFile = config["sound_directory"] + "stream.wav"
    
@@ -32,11 +28,10 @@ def run_tts(answer: str,fileDate: str, config) -> None:
 
     tts.tts_to_file(text=answer, file_path=fullFile)
     del tts
-    run_garbage_collection()
     if config["readAftergenerate"]:
-        play_audio(fullFile)
+        play_audio(fullFile,config)
 
-def play_audio(file_path: str) -> None:
+def play_audio(file_path: str,config) -> None:
     """
     Play an audio file given its path. This function blocks until the audio file has finished playing.
 
@@ -49,7 +44,7 @@ def play_audio(file_path: str) -> None:
     pygame.mixer.init()
     pygame.mixer.music.load(file_path)
     pygame.mixer.music.play()
-    print(f"{bcolors.OKBLUE}Press Ctrl+C to stop playing{bcolors.ENDC}")
+    print_text(f"{bcolors.OKBLUE}Press Ctrl+C to stop playing{bcolors.ENDC}",config,False)
     try:
         while pygame.mixer.music.get_busy():
             pygame.time.Clock().tick(10)

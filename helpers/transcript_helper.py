@@ -1,5 +1,4 @@
-
-
+from helpers.file_helper import write_transcript, open_file
 def save_transcript(user_prompt: str, answer: str, fileDate: str, config) -> None:
     """
     Save the generated transcript to a file.
@@ -14,6 +13,5 @@ def save_transcript(user_prompt: str, answer: str, fileDate: str, config) -> Non
     """
     
     if config["generateTranscript"]:
-        with open(f"{config['transcript_directory']}{fileDate}-transcript.txt", 'w') as f:
-            f.write(f"Original Prompt: {user_prompt}\n\n")
-            f.write(str(answer))
+        write_transcript(f"Original Prompt: {user_prompt}\n\n{answer}", config, fileDate)
+

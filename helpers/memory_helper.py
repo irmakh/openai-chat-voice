@@ -1,8 +1,5 @@
 import torch
 import gc
-import datetime
-import os
-from bgcolors import bcolors
 def run_garbage_collection() -> None:
     """
     Run garbage collection and free up GPU memory.
@@ -15,7 +12,6 @@ def run_garbage_collection() -> None:
     """
     torch.cuda.empty_cache()
     gc.collect()
-    #print(f"{bcolors.OKGREEN}{datetime.datetime.now().strftime('%H:%M:%S')} - garbage collected{bcolors.ENDC}")
     print_used_gpu_memory()
 
 def print_used_gpu_memory() -> None:
@@ -33,5 +29,4 @@ def print_used_gpu_memory() -> None:
     """
     if torch.cuda.is_available():
         used_memory: float = torch.cuda.memory_allocated() / (1024 ** 2)  # Convert to MB
-        #print(f"{bcolors.OKBLUE}Used GPU Memory: {used_memory:.2f} MB{bcolors.ENDC}")
-
+    return used_memory

@@ -25,7 +25,7 @@ def main() -> None:
     config = load_config()
     # Initialize configuration settings and run garbage collection
     if config["speakWelcome"]:
-        play_audio("hi.wav")
+        play_audio("hi.wav",config)
     run_garbage_collection()
     # Client to interact with the OpenAI API
     client = OpenAI(base_url=config["base_url"],api_key=config["OPENAI_API_KEY"])
@@ -35,11 +35,11 @@ def main() -> None:
     # Main program loop
     while True:
         fileDate = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
-        user_prompt= get_user_input()
+        user_prompt= get_user_input(config)
 
         if user_prompt.lower() == "bye":
             if config["speakWelcome"]:
-                play_audio("bye.wav")
+                play_audio("bye.wav",config)
             break
         
         chatHistory = '\n'.join(chatHistoryArray[-memory:])
@@ -56,7 +56,8 @@ def main() -> None:
 
         if len(chatHistoryArray) > memory:
             del chatHistoryArray[:-memory]
-
+        
+        del chatHistoryArray[0]
         chatHistoryArray = [config["initialContent"]]+chatHistoryArray
 
         run_tts(answer,fileDate,config)
@@ -65,7 +66,7 @@ def main() -> None:
 
         run_garbage_collection()
     # Exit the program
-    exit_program()
+    exit_program(config)
 
 if __name__ == "__main__":
     main()

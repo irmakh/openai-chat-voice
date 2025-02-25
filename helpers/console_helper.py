@@ -1,35 +1,35 @@
 import sys
 import os
 from bgcolors import bcolors
-from config_loader import load_config
 from helpers.memory_helper import run_garbage_collection
 
 
-config = load_config()
-
-def print_text(answer: str) -> None:
+def print_text(answer: str, config, headers: bool = True) -> None:
     """
     Print out the generated text in a formatted way.
 
     Args:
         answer (str): The generated text to print
+        headers (bool, optional): Whether to add headers to the output. Defaults to True.
 
     Returns:
         None
     """
     if config["printGeneratedText"]:
-        print("\n\n")
-        print(f"{bcolors.HEADER}{bcolors.BOLD}==============================================")
-        print(f"                  TEXT TO SPEECH                ")
-        print(f"=============================================={bcolors.ENDC}")
-        print("\n")
+        if headers:
+            print("\n\n")
+            print(f"{bcolors.HEADER}{bcolors.BOLD}==============================================")
+            print(f"                  TEXT TO SPEECH                ")
+            print(f"=============================================={bcolors.ENDC}")
+            print("\n")
         print(answer)
-        print("\n")
-        print(f"{bcolors.HEADER}==============================================")
-        print("                  END OF SPEECH               ")
-        print(f"=============================================={bcolors.ENDC}")
+        if headers:
+            print("\n")
+            print(f"{bcolors.HEADER}==============================================")
+            print("                  END OF SPEECH               ")
+            print(f"=============================================={bcolors.ENDC}")
        
-def get_user_input() -> str:
+def get_user_input(config) -> str:
     """
     Get user input and return the prompt as a string.
 
@@ -47,7 +47,7 @@ def get_user_input() -> str:
     print("\n")
     return user_prompt
 
-def exit_program() -> None:
+def exit_program(config) -> None:
     """
     Exit the program gracefully.
 

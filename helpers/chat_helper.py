@@ -1,5 +1,4 @@
 from helpers.memory_helper import run_garbage_collection
-import re
 
 def generate(user_prompt: str, content: str, client, config) -> str:
     """
