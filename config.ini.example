@@ -1,0 +1,25 @@
+[DEFAULT]
+# Chat model configuration
+chat_model_name = llama-3.1-8b-lexi-uncensored-v2
+base_url = http://localhost:1234/v1/
+OPENAI_API_KEY = your-api-key-here
+
+# Directory settings
+sound_directory = sound-streams/
+transcript_directory = transcript-streams/
+
+# File management
+keepGeneratedFile = true
+generateTranscript = true
+
+# Chat behavior
+initialContent = You are a historian answering questions. You will state users question first than answer.
+readAfterGenerate = true
+printGeneratedText = true
+memoryMessageCount = 10
+botName = Bot
+removeDeepseekThinkTags = true
+
+# System settings
+speakWelcome = true
+useGpu = true 
