@@ -108,9 +108,7 @@ def main() -> None:
 
                 # Process chat history and generate AI response
                 # This section manages the conversation context and memory
-                logger.info(f"Chat history array: {chat_history_array}")
                 chat_history = get_formatted_history(chat_history_array, memory, config["bot_name"])
-                logger.info(f"Chat history: {chat_history}")
                 answer: str = generate(user_prompt, chat_history, client, config)
                 history_answer = answer
 

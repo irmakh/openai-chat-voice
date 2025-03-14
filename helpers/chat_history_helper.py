@@ -21,10 +21,11 @@ def manage_chat_history(user_prompt: str, answer: str, chat_history: list, initi
     # Append the latest messages
     chat_history.append({"role": "user", "content": user_prompt})
     chat_history.append({"role": "assistant", "content": answer})
-
+    logger.info(f"Chat history: {chat_history}")
     # Truncate history to maintain memory limit
     if len(chat_history) > memory:
         chat_history = chat_history[-memory:]
+    
 
     return chat_history
 
