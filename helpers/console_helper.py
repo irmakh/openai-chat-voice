@@ -1,4 +1,4 @@
-import sys
+
 import os
 from bgcolors import bcolors
 from helpers.memory_helper import run_garbage_collection
@@ -19,7 +19,7 @@ def print_text(answer: str, config, headers: bool = True) -> None:
         if headers:
             print("\n\n")
             print(f"{bcolors.HEADER}{bcolors.BOLD}==============================================")
-            print(f"                  TEXT TO SPEECH                ")
+            print("                  TEXT TO SPEECH                ")
             print(f"=============================================={bcolors.ENDC}")
             print("\n")
         print(answer)
@@ -28,7 +28,7 @@ def print_text(answer: str, config, headers: bool = True) -> None:
             print(f"{bcolors.HEADER}==============================================")
             print("                  END OF SPEECH               ")
             print(f"=============================================={bcolors.ENDC}")
-       
+
 def get_user_input(config) -> str:
     """
     Get user input and return the prompt as a string.
@@ -60,7 +60,7 @@ def exit_program(config) -> None:
         None
     """
     run_garbage_collection()
-   
+
     file_path = os.path.join(config['sound_directory'], "stream.wav")
     if os.path.exists(file_path):
         os.remove(file_path)
@@ -71,4 +71,3 @@ def exit_program(config) -> None:
     print(f"=============================================={bcolors.ENDC}")
     print("\n")
     exit(0)
-
