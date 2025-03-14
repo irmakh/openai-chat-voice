@@ -1,46 +1,52 @@
-def manage_chat_history(user_prompt: str, bot_response: str, chat_history_array: list, initial_content: str, bot_name: str, memory_limit: int) -> list:
-    """
-    Manages the chat history by updating it with new messages and maintaining its size.
-    
-    Args:
-        user_prompt (str): The user's input message
-        bot_response (str): The bot's response message
-        chat_history_array (list): Current chat history array
-        initial_content (str): Initial system content/prompt
-        bot_name (str): Name of the bot
-        memory_limit (int): Maximum number of messages to keep in memory
-        
-    Returns:
-        list: Updated chat history array
-    """
-    # Update chat history with user input and bot response
-    chat_history_array.append(f"User: {user_prompt}")
-    chat_history_array.append(f"{bot_name}: {bot_response}")
-    
-    # Maintain chat history size within memory limit
-    if len(chat_history_array) > memory_limit:
-        del chat_history_array[:-memory_limit]
-    
-    # Reset chat history with initial content
-    del chat_history_array[0]
-    chat_history_array = [initial_content] + chat_history_array
-    
-    return chat_history_array
+import logging
 
-def get_formatted_history(chat_history_array: list, memory_limit: int, bot_name: str) -> str:
+# Set up logging configuration
+logger = logging.getLogger(__name__)
+
+def manage_chat_history(user_prompt: str, answer: str, chat_history: list, initial_content: str, bot_name: str, memory: int) -> list:
     """
-    Formats the chat history for use in generating responses.
-    
+    Update the chat history with the latest user prompt and assistant answer.
+
     Args:
-        chat_history_array (list): Current chat history array
-        memory_limit (int): Maximum number of messages to include
-        bot_name (str): Name of the bot to replace in the history
-        
+        user_prompt (str): The latest user input.
+        answer (str): The assistant's response.
+        chat_history (list): Current list of chat history messages.
+        initial_content (str): Initial content of the chat.
+        bot_name (str): Name of the bot.
+        memory (int): Number of messages to keep in history.
+
     Returns:
-        str: Formatted chat history string
+        list: Updated chat history.
     """
-    # Join recent messages and replace bot name placeholder
-    chat_history = '\n'.join(chat_history_array[-memory_limit:])
-    chat_history = chat_history.replace("{botName}", bot_name)
+    # Append the latest messages
+    chat_history.append({"role": "user", "content": user_prompt})
+    chat_history.append({"role": "assistant", "content": answer})
+
+    # Truncate history to maintain memory limit
+    if len(chat_history) > memory:
+        chat_history = chat_history[-memory:]
+
+    return chat_history
+
+def get_formatted_history(chat_history: list, memory: int, bot_name: str) -> str:
+    """
+    Format the chat history for the model input.
+
+    Args:
+        chat_history (list): List of chat messages.
+        memory (int): Number of messages to include.
+        bot_name (str): Name of the bot.
+
+    Returns:
+        str: Formatted chat history.
+    """
+    # Slice the chat history to include only the last 'memory' messages
+    recent_history = chat_history[-memory:]
+
+    # Format the history as a single string
+    formatted_history = ""
+    for message in recent_history:
+        role = "User" if message["role"] == "user" else bot_name
+        formatted_history += f"{role}: {message['content']}\n"
     
-    return chat_history 
+    return formatted_history

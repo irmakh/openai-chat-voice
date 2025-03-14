@@ -1,18 +1,14 @@
 import torch
 import gc
+
 def run_garbage_collection() -> None:
     """
-    Run garbage collection and free up GPU memory.
-
-    Args:
-        None
+    Run Python's garbage collector to free up memory.
 
     Returns:
         None
     """
-    torch.cuda.empty_cache()
     gc.collect()
-    print_used_gpu_memory()
 
 def print_used_gpu_memory() -> None:
     """

@@ -1,17 +1,17 @@
-from helpers.file_helper import write_transcript, open_file
-def save_transcript(user_prompt: str, answer: str, fileDate: str, config) -> None:
+from helpers.file_helper import write_transcript
+def save_transcript(user_prompt: str, answer: str, file_date: str, config) -> None:
     """
     Save the generated transcript to a file.
 
     Args:
         user_prompt (str): The original user prompt
         answer (str): The generated text response
-        fileDate (str): The date and time string for the file name
+        file_date (str): The date and time string for the file name
 
     Returns:
         None
     """
     
-    if config["generateTranscript"]:
-        write_transcript(f"Original Prompt: {user_prompt}\n\n{answer}", config, fileDate)
+    if config["generate_transcript"]:
+        write_transcript(f"Original Prompt: {user_prompt}\n\n{answer}", config, file_date)
 

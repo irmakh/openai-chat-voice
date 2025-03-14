@@ -24,11 +24,12 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler('app.log'),
-        #logging.StreamHandler(sys.stdout)
+        logging.StreamHandler(sys.stdout)
     ]
 )
 
 logger = logging.getLogger(__name__)
+
 
 def initialize_client(config: dict) -> Optional[OpenAI]:
     """
@@ -43,7 +44,7 @@ def initialize_client(config: dict) -> Optional[OpenAI]:
     try:
         client = OpenAI(
             base_url=config["base_url"],
-            api_key=config["OPENAI_API_KEY"]
+            api_key=config["openai_api_key"]
         )
         return client
     except Exception as e:
@@ -69,7 +70,7 @@ def main() -> None:
             sys.exit(1)
         
         # Play welcome message if configured
-        if config["speakWelcome"]:
+        if config["speak_welcome"]:
             logger.info("Playing welcome message...")
             play_audio("hi.wav", config)
         
@@ -77,15 +78,15 @@ def main() -> None:
         logger.info("Running initial garbage collection...")
         run_garbage_collection()
         
-        # Initialize chat history
-        chatHistoryArray = [config["initialContent"]]
-        memory = config["memoryMessageCount"]*2
+        # Initialize chat history as a list
+        chat_history_array = [{"role": "user", "content": config["initial_content"]}]
+        memory = config["memory_message_count"] * 2
         
         logger.info("Starting main interaction loop...")
         while True:
             try:
                 # Generate timestamp
-                fileDate = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
+                file_date = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
                 
                 # Get user input
                 user_prompt = get_user_input(config)
@@ -93,33 +94,35 @@ def main() -> None:
 
                 # Check for exit command
                 if user_prompt.lower() == "bye":
-                    if config["speakWelcome"]:
+                    if config["speak_welcome"]:
                         play_audio("bye.wav", config)
                     logger.info("Exit command received. Shutting down...")
                     break
                 
                 # Get chat history and generate response
-                chatHistory = get_formatted_history(chatHistoryArray, memory, config["botName"])
-                answer: str = generate(user_prompt, chatHistory, client, config)
-                historyAnswer = answer
-                
+                logger.info(f"Chat history array: {chat_history_array}")
+                chat_history = get_formatted_history(chat_history_array, memory, config["bot_name"])
+                logger.info(f"Chat history: {chat_history}")
+                answer: str = generate(user_prompt, chat_history, client, config)
+                history_answer = answer
+         
                 # Process response
-                if config["removeDeepseekThinkTags"]:
+                if config["remove_deepseek_think_tags"]:
                     answer = re.sub(r"<think>.*?</think>", "", answer, flags=re.DOTALL)
                 
                 # Update chat history
-                chatHistoryArray = manage_chat_history(
+                chat_history_array = manage_chat_history(
                     user_prompt,
-                    historyAnswer,
-                    chatHistoryArray,
-                    config["initialContent"],
-                    config["botName"],
+                    history_answer,
+                    chat_history_array,
+                    config["initial_content"],
+                    config["bot_name"],
                     memory
                 )
                 
                 # Handle text-to-speech and transcript
-                run_tts(answer, fileDate, config)
-                save_transcript(user_prompt, answer, fileDate, config)
+                run_tts(answer, file_date, config)
+                save_transcript(user_prompt, answer, file_date, config)
                 
                 # Cleanup
                 run_garbage_collection()

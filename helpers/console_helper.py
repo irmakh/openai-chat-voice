@@ -15,7 +15,7 @@ def print_text(answer: str, config, headers: bool = True) -> None:
     Returns:
         None
     """
-    if config["printGeneratedText"]:
+    if config["print_generated_text"]:
         if headers:
             print("\n\n")
             print(f"{bcolors.HEADER}{bcolors.BOLD}==============================================")

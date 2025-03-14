@@ -1,59 +1,48 @@
-import os 
-def open_file(filepath):
-    """
-    Opens a file in write mode.
+import os
+import logging
 
-    Args:
-        filepath (str): The path to the file to open.
+# Set up logging configuration
+logger = logging.getLogger(__name__)
 
-    Returns:
-        file: The opened file.
-    """
-    return open(filepath, 'w')
+def open_file(file_path):
+    # Open a file for writing and return the file object
+    try:
+        return open(file_path, 'w')
+    except Exception as e:
+        # Log an error message if opening the file fails
+        logger.error(f"Failed to open file {file_path}. Error: {str(e)}")
+        raise
 
 def write_to_opened_file(opened_file, contents):
-    """
-    Writes to an opened file.
+    # Write contents to a previously opened file and flush any buffered data
+    try:
+        opened_file.write(contents)
+        opened_file.flush()
+    except Exception as e:
+        # Log an error message if writing to the file fails
+        logger.error("Failed to write to file. Error: " + str(e))
+        raise
 
-    Args:
-        opened_file (file): The file to write to.
-        contents (str): The text to write.
-    """
-    # Write the contents to the file
-    opened_file.write(contents)
-    # Flush the file to make sure all the write operations have been completed
-    opened_file.flush()
-def write_transcript(contents, config, fileDate):
-    """
-    Writes the transcript to a file.
+def write_transcript(contents, config, file_date):
+    # Write transcript contents to a new text file with a filename based on the current date
+    try:
+        file_path = os.path.join(config["transcript_directory"], f"{file_date}-transcript.txt")
+        with open_file(file_path) as file:
+            write_to_opened_file(file, contents)
+            logger.info("Transcript written successfully.")
+    except Exception as e:
+        # Log an error message if writing the transcript fails
+        logger.error("Failed to write transcript. Error: " + str(e))
+        raise
 
-    Args:
-        contents (str): The transcript contents to write.
-        config (dict): The configuration dictionary.
-        fileDate (str): The date and time string for the file name.
-
-    Returns:
-        None
-    """
-    # Open the file in write mode
-    with open_file(config["transcript_directory"] + fileDate + "-transcript.txt") as file:
-        # Write the contents to the file
-        write_to_opened_file(file, contents)
-
-def write_sound(contents, config, fileDate):
-    """
-    Writes the audio data to a file.
-
-    Args:
-        contents (bytes): The audio data to write.
-        config (dict): The configuration dictionary.
-        fileDate (str): The date and time string for the file name.
-
-    Returns:
-        None
-    """
-    # Open the file in write binary mode
-    with open_file(config["sound_directory"] + fileDate + "-sound.wav", 'wb') as file:
-        # Write the contents to the file
-        write_to_opened_file(file, contents)
-
+def write_sound(contents, config, file_date):
+    # Write sound data to a new WAV file with a filename based on the current date
+    try:
+        file_path = os.path.join(config["sound_directory"], f"{file_date}-sound.wav")
+        with open_file(file_path, 'wb') as file:
+            write_to_opened_file(file, contents)
+            logger.info("Sound data written successfully.")
+    except Exception as e:
+        # Log an error message if writing the sound data fails
+        logger.error("Failed to write sound data. Error: " + str(e))
+        raise
