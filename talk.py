@@ -24,7 +24,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler('app.log'),
-        logging.StreamHandler(sys.stdout)
+        # logging.StreamHandler(sys.stdout)
     ]
 )
 
@@ -86,7 +86,7 @@ def main() -> None:
 
         # Initialize chat history with system prompt
         # This sets up the initial context for the conversation
-        chat_history_array = [{"role": "user", "content": config["initial_content"]}]
+        chat_history_array = [{"role": "user", "content": config["initial_content"].format(bot_name=config["bot_name"])}]
         memory = config["memory_message_count"] * 2  # Calculate memory window size
 
         logger.info("Starting main interaction loop...")
