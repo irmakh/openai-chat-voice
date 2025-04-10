@@ -13,8 +13,8 @@ def run_tts(answer: str, file_date: str, config) -> None:
         config: Configuration dictionary with settings for the text-to-speech engine and playback
     """
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    tts_model_name = "tts_models/en/jenny/jenny"
-
+    #tts_model_name = "tts_models/en/jenny/jenny"
+    tts_model_name = config['bot_sound']
     # Initialize TTS model
     tts = TTS(model_name=tts_model_name, progress_bar=False).to(device)
     if config["print_generated_text"]:

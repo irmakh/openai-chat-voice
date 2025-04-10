@@ -33,5 +33,6 @@ def load_config() -> dict:
         "bot_name": config.get('DEFAULT', 'bot_name', fallback="Bot"),  # Get bot name with a fallback
         "remove_deepseek_think_tags": config.getboolean('DEFAULT', 'remove_deepseek_think_tags', fallback=True),  # Get flag for removing specific tags
         "speak_welcome": config.getboolean('DEFAULT', 'speak_welcome', fallback=True),  # Get flag for speaking welcome message
-        "use_gpu": config.getboolean('DEFAULT', 'use_gpu', fallback=True)  # Get flag for using GPU processing
+        "use_gpu": config.getboolean('DEFAULT', 'use_gpu', fallback=True),  # Get flag for using GPU processing,
+        "bot_sound": config.get('DEFAULT', 'bot_sound', fallback="tts_models/en/vctk/vits") 
     }
