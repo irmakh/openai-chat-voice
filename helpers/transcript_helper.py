@@ -12,6 +12,5 @@ def save_transcript(user_prompt: str, answer: str, file_date: str, config) -> No
         None
     """
     
-    if config["generate_transcript"]:
-        write_transcript(f"Original Prompt: {user_prompt}\n\n{answer}", config, file_date)
+    write_transcript(f"Original Prompt: {user_prompt}\n\n{answer}", config, file_date)
 

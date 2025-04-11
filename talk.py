@@ -12,7 +12,7 @@ from config_loader import load_config
 from helpers.tts_helper import run_tts, play_audio
 from helpers.memory_helper import run_garbage_collection
 from helpers.transcript_helper import save_transcript
-from helpers.console_helper import get_user_input, exit_program
+from helpers.console_helper import get_user_input, exit_program,print_text
 from helpers.chat_helper import generate
 from helpers.chat_history_helper import manage_chat_history, get_formatted_history
 
@@ -86,7 +86,8 @@ def main() -> None:
 
         # Initialize chat history with system prompt
         # This sets up the initial context for the conversation
-        chat_history_array = [{"role": "user", "content": config["initial_content"].format(bot_name=config["bot_name"])}]
+        now = datetime.datetime.now()
+        chat_history_array = [{"role": "user", "content": f"{config['initial_content'].format(bot_name=config['bot_name'])}\n\nCurrent date and time: {now.strftime('%Y-%m-%d %H:%M:%S')}"}]
         memory = config["memory_message_count"] * 2  # Calculate memory window size
 
         logger.info("Starting main interaction loop...")
@@ -97,6 +98,7 @@ def main() -> None:
 
                 # Get user input with configured prompt
                 user_prompt = get_user_input(config)
+                user_prompt_date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 logger.info(f"Received user input: {user_prompt}")
 
                 # Check for exit command and handle graceful shutdown
@@ -110,12 +112,14 @@ def main() -> None:
                 # This section manages the conversation context and memory
                 chat_history = get_formatted_history(chat_history_array, memory, config["bot_name"])
                 answer: str = generate(user_prompt, chat_history, client, config)
+                answer_date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 history_answer = answer
 
                 # Remove thinking process tags if configured
                 # These tags might contain internal AI reasoning that we don't want to show
                 if config["remove_deepseek_think_tags"]:
                     answer = re.sub(r"<think>.*?</think>", "", answer, flags=re.DOTALL)
+
 
                 # Update conversation history while maintaining memory limits
                 # This ensures the context window doesn't grow too large
@@ -125,14 +129,20 @@ def main() -> None:
                     chat_history_array,
                     config["initial_content"],
                     config["bot_name"],
-                    memory
+                    memory,
+                    user_prompt_date,
+                    answer_date
                 )
 
                 # Process response for output
                 # - Convert text to speech
                 # - Save conversation transcript
-                run_tts(answer, file_date, config)
-                save_transcript(user_prompt, answer, file_date, config)
+                if config["print_generated_text"]:
+                    print_text(answer, config)
+                if config["read_after_generate"]:
+                    run_tts(answer, file_date, config)
+                if config["generate_transcript"]:
+                    save_transcript(user_prompt, answer, file_date, config)
 
                 # Regular memory cleanup to prevent memory leaks
                 run_garbage_collection()

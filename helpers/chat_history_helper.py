@@ -1,9 +1,9 @@
 import logging
-
+from datetime import datetime
 # Set up logging configuration
 logger = logging.getLogger(__name__)
 
-def manage_chat_history(user_prompt: str, answer: str, chat_history: list, initial_content: str, bot_name: str, memory: int) -> list:
+def manage_chat_history(user_prompt: str, answer: str, chat_history: list, initial_content: str, bot_name: str, memory: int, user_date_time_str: str, answer_date_time_str: str) -> list:
     """
     Update the chat history with the latest user prompt and assistant answer.
 
@@ -14,13 +14,16 @@ def manage_chat_history(user_prompt: str, answer: str, chat_history: list, initi
         initial_content (str): Initial content of the chat.
         bot_name (str): Name of the bot.
         memory (int): Number of messages to keep in history.
+        user_date_time_str (str): Date and time string for user prompt.
+        answer_date_time_str (str): Date and time string for assistant answer.
 
     Returns:
         list: Updated chat history.
     """
+
     # Append the latest messages
-    chat_history.append({"role": "user", "content": user_prompt})
-    chat_history.append({"role": "assistant", "content": answer})
+    chat_history.append({"role": "user", "content": f"{user_date_time_str} : {user_prompt}"})
+    chat_history.append({"role": "assistant", "content": f"{answer_date_time_str} : {answer}"})
     logger.info(f"Chat history: {chat_history}")
     # Truncate history to maintain memory limit
     if len(chat_history) > memory:

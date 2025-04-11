@@ -2,7 +2,6 @@ import torch
 from TTS.api import TTS
 import pygame
 from bgcolors import bcolors
-from helpers.console_helper import print_text
 def run_tts(answer: str, file_date: str, config) -> None:
     """
     Run the TTS model, generate speech based on the user's prompt, and play the generated audio.
@@ -17,9 +16,6 @@ def run_tts(answer: str, file_date: str, config) -> None:
     tts_model_name = config['bot_sound']
     # Initialize TTS model
     tts = TTS(model_name=tts_model_name, progress_bar=False).to(device)
-    if config["print_generated_text"]:
-        # Print the generated text
-        print_text(answer, config)
 
     file_extension = "-generated.wav" if config["keep_generated_file"] else ".wav"
     file_name = f"{config['sound_directory']}stream{file_extension}"
