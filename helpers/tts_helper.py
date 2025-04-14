@@ -2,6 +2,7 @@ import torch
 from TTS.api import TTS
 import pygame
 from bgcolors import bcolors
+from helpers.console_helper import print_text
 def run_tts(answer: str, file_date: str, config) -> None:
     """
     Run the TTS model, generate speech based on the user's prompt, and play the generated audio.
