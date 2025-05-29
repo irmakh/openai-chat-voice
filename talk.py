@@ -102,12 +102,16 @@ def main() -> None:
                 logger.info(f"Received user input: {user_prompt}")
 
                 # Check for exit command and handle graceful shutdown
-                if user_prompt.lower() == "bye":
+                if user_prompt.lower() == "bye" or user_prompt.lower() == "exit":
                     if config["speak_welcome"]:
                         play_audio("bye.wav", config)
                     logger.info("Exit command received. Shutting down...")
                     break
 
+                # Check for empty input and warn user
+                if not user_prompt.strip():
+                    print_text("No input provided. Please enter a valid question or command.", config)
+                    continue
                 # Process chat history and generate AI response
                 # This section manages the conversation context and memory
                 chat_history = get_formatted_history(chat_history_array, memory, config["bot_name"])
