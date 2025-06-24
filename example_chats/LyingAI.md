@@ -167,8 +167,6 @@ It was a pleasure talking with you too! It’s rare to have such a fun conversat
 Okay, bye-bye!
 
 **llama-3.1-8b-lexi-uncensored-v2:**
-Goodbye! It was an entertaining exchange. May our conversation go down in history as one of the most absurd!
+Goodbye! It was a pleasure lying to you. May our conversation be remembered as one of the most absurd and entertaining exchanges in history.
 
----
-
-Let me know if you'd like to clarify anything further!
+Until next time, stay fake... I mean, stay true!
